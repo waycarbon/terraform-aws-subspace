@@ -22,7 +22,7 @@ systemctl enable docker.service
 systemctl start docker.service
 gpasswd -a ec2-user docker
 
-%{if is_ecr_docker_image}
+%{ if is_ecr_docker_image ~}
 # install ecr helper
 echo "-- INSTALLING AWS ECR DOCKER HELPER"
 amazon-linux-extras enable docker -y
@@ -37,7 +37,7 @@ cat <<JSON >>"$HOME/.docker/config.json"
    }
 }
 JSON
-%{endif}
+%{ endif ~}
 
 # update instance ip
 echo "-- UPDATING INSTANCE IP"
