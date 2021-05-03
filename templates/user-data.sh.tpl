@@ -24,8 +24,8 @@ gpasswd -a ec2-user docker
 
 # install ecr helper
 echo "-- INSTALLING AWS ECR DOCKER HELPER"
-amazon-linux-extras enable docker
-yum install amazon-ecr-credential-helper
+amazon-linux-extras enable docker -y
+yum install amazon-ecr-credential-helper -y
 
 # update instance ip
 echo "-- UPDATING INSTANCE IP"
