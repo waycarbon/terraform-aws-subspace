@@ -57,6 +57,8 @@ resource "aws_launch_template" "instance" {
   user_data = base64encode(templatefile(
     "${path.module}/templates/user-data.sh.tpl",
     {
+      aws_region                      = var.region
+      aws_account_id                  = data.aws_caller_identity.current.account_id
       wireguard_allowed_ips           = var.allowed_ips
       wireguard_subspace_docker_image = var.docker_image
       is_ecr_docker_image             = var.is_ecr_docker_image
