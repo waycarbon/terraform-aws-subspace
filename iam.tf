@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "backup_and_eip" {
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage"
     ]
-    resources = "*"
+    resources = ["*"]
   }
 }
 
