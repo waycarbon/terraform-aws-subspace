@@ -59,6 +59,7 @@ resource "aws_launch_template" "instance" {
     {
       wireguard_allowed_ips           = var.allowed_ips
       wireguard_subspace_docker_image = var.docker_image
+      is_ecr_docker_image                    = var.is_ecr_docker_image
       wireguard_subspace_http_host    = aws_route53_record.web.fqdn
       wireguard_endpoint_host         = aws_route53_record.endpoint.fqdn
       wireguard_backup_bucket_name    = aws_s3_bucket.backup.bucket

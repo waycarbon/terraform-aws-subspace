@@ -22,10 +22,22 @@ systemctl enable docker.service
 systemctl start docker.service
 gpasswd -a ec2-user docker
 
+%{if is_ecr_docker_image}
 # install ecr helper
 echo "-- INSTALLING AWS ECR DOCKER HELPER"
 amazon-linux-extras enable docker -y
 yum install amazon-ecr-credential-helper -y
+
+mkdir -p ~/.docker
+cat <<JSON >>"$HOME/.docker/config.json"
+{
+   "credHelpers": {
+      "public.ecr.aws": "ecr-login",
+      "${regex("\\d+\\.dkr\\.ecr\\.[\\w-]+\\.amazonaws\\.com", wireguard_subspace_docker_image)}": "ecr-login"
+   }
+}
+JSON
+%{endif}
 
 # update instance ip
 echo "-- UPDATING INSTANCE IP"

@@ -53,3 +53,8 @@ variable "docker_image" {
   default = "subspacecommunity/subspace"
   type    = string
 }
+
+variable "is_ecr_docker_image" {
+  default = false
+  type    = bool
+}
