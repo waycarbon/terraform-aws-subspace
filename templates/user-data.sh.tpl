@@ -2,45 +2,40 @@
 exec > >(tee /var/log/user-data.log) 2>&1
 set -eu
 
+function log {
+  echo "--[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
+
+log "STARTING USER-DATA"
+
 # install wireguard on amazon linux 2
-echo "-- INSTALLING WIREGUARD"
+log "INSTALLING WIREGUARD"
 curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo
 yum install kernel-headers-"$(uname -r)" kernel-devel-"$(uname -r)" -y
 yum install wireguard-dkms wireguard-tools iptables-services jq -y
 
 # build and wireguard kernel module
-echo "-- BUILDING WIREGUARD KERNEL MODULE"
+log "BUILDING WIREGUARD KERNEL MODULE"
 dkms status
 WIREGUARD_VERSION="$(dkms status | grep wireguard | awk -F ', ' '{print $2}')"
 dkms build wireguard/"$WIREGUARD_VERSION"
 dkms install wireguard/"$WIREGUARD_VERSION"
 
 # install docker and pull image
-echo "-- INSTALLING DOCKER"
+log "INSTALLING DOCKER"
 yum install -y docker
 systemctl enable docker.service
 systemctl start docker.service
 gpasswd -a ec2-user docker
 
 %{ if is_ecr_docker_image ~}
-# install ecr helper
-echo "-- INSTALLING AWS ECR DOCKER HELPER"
-amazon-linux-extras enable docker -y
-yum install amazon-ecr-credential-helper -y
-
-mkdir -p "/root/.docker"
-cat <<JSON >>"/root/.docker/config.json"
-{
-   "credHelpers": {
-      "public.ecr.aws": "ecr-login",
-      "${regex("\\d+\\.dkr\\.ecr\\.[\\w-]+\\.amazonaws\\.com", wireguard_subspace_docker_image)}": "ecr-login"
-   }
-}
-JSON
+# authenticate to aws ecr
+log "AUTHENTICATING TO AWS ECR"
+aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
 %{ endif ~}
 
 # update instance ip
-echo "-- UPDATING INSTANCE IP"
+log "UPDATING INSTANCE IP"
 export INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
 export REGION=$(curl -fsq http://169.254.169.254/latest/meta-data/placement/availability-zone | sed 's/[a-z]$//')
 
@@ -51,7 +46,7 @@ EPI_ASSOCIATION_ID="$(aws --region $REGION ec2 associate-address --allocation-id
 BACKUP_FILE='wireguard.tar.gz'
 BACKUP_EXISTS="$(aws s3api head-object --bucket ${wireguard_backup_bucket_name} --key "$BACKUP_FILE" 2>&1 | grep -c LastModified)" || true
 if [[ "$BACKUP_EXISTS" != "0" ]]; then
-  echo "-- RESTORING BACKUP"
+  log "RESTORING BACKUP"
   mkdir -p /data
   aws s3 cp s3://${wireguard_backup_bucket_name}/"$BACKUP_FILE" /tmp
   tar -xzvf /tmp/"$BACKUP_FILE" --directory /data
@@ -60,10 +55,11 @@ else
 fi
 
 # sets cronjob routines for main or redundant node
-echo "-- SETTING CRONJOB ROUTINE"
+log "SETTING CRONJOB ROUTINE"
 if [[ "$EPI_ASSOCIATION_ID" != "null" ]]; then
   echo "This is the main node"
-  cat <<EOF >>/etc/cron.hourly/backup_wireguard
+  CRON_FILE=/etc/cron.hourly/backup_wireguard
+  cat <<EOF >>"$CRON_FILE"
 #!/bin/sh
 set -euo pipefail
 
@@ -74,7 +70,8 @@ rm -rf /tmp/"$BACKUP_FILE"
 EOF
 else
   echo "This is a redundant node"
-  cat <<EOF >>/etc/cron.hourly/pull_wireguard_backup
+  CRON_FILE=/etc/cron.hourly/pull_wireguard_backup
+  cat <<EOF >>"$CRON_FILE"
 #!/bin/sh
 set -euo pipefail
 
@@ -89,9 +86,10 @@ rm -rf /tmp/wireguard-data
 rm -rf /tmp/"$BACKUP_FILE"
 EOF
 fi
+chmod +x "$CRON_FILE"
 
 # Load modules.
-echo "-- LOADING KERNEL MODULES"
+log "LOADING KERNEL MODULES"
 modprobe wireguard
 modprobe iptable_nat
 modprobe ip6table_nat
@@ -113,7 +111,7 @@ EOF
 sysctl -p
 
 # create and start subspace docker
-echo "-- CREATING AND STARTING VPN DOCKER CONTAINER"
+log "CREATING AND STARTING VPN DOCKER CONTAINER"
 docker create \
   --name subspace \
   --restart always \
@@ -133,3 +131,5 @@ docker create \
   ${wireguard_subspace_docker_image}
 
 docker start subspace
+
+log "ENDING USER-DATA"

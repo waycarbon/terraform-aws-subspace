@@ -11,3 +11,5 @@ data "aws_ami" "amazon_linux_2" {
 data "aws_route53_zone" "target" {
   zone_id = var.zone_id
 }
+
+data "aws_caller_identity" "current" {}
