@@ -28,8 +28,8 @@ echo "-- INSTALLING AWS ECR DOCKER HELPER"
 amazon-linux-extras enable docker -y
 yum install amazon-ecr-credential-helper -y
 
-mkdir -p ~/.docker
-cat <<JSON >>"$HOME/.docker/config.json"
+mkdir -p "/root/.docker"
+cat <<JSON >>"/root/.docker/config.json"
 {
    "credHelpers": {
       "public.ecr.aws": "ecr-login",
