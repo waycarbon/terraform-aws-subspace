@@ -19,7 +19,7 @@ variable "zone_id" {
 }
 
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
 
@@ -47,4 +47,14 @@ variable "web_url" {
 variable "desired_instances" {
   default = 1
   type    = number
+}
+
+variable "docker_image" {
+  default = "subspacecommunity/subspace"
+  type    = string
+}
+
+variable "is_ecr_docker_image" {
+  default = false
+  type    = bool
 }

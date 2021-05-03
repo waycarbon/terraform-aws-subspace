@@ -21,6 +21,16 @@ data "aws_iam_policy_document" "backup_and_eip" {
       aws_s3_bucket.backup.arn
     ]
   }
+
+  statement {
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "backup_and_eip" {
