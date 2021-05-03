@@ -36,5 +36,5 @@ resource "aws_security_group" "wireguard" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge({Name = var.name}, var.tags)
+  tags = merge({ Name = var.name }, var.tags)
 }
