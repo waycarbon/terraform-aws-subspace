@@ -18,7 +18,6 @@ resource "aws_key_pair" "this" {
   public_key = tls_private_key.this.public_key_openssh
 }
 
-
 resource "aws_launch_template" "instance" {
   name = var.name
 
@@ -58,11 +57,12 @@ resource "aws_launch_template" "instance" {
   user_data = base64encode(templatefile(
     "${path.module}/templates/user-data.sh.tpl",
     {
-      wireguard_allowed_ips        = var.allowed_ips
-      wireguard_subspace_http_host = aws_route53_record.web.fqdn
-      wireguard_endpoint_host      = aws_route53_record.endpoint.fqdn
-      wireguard_backup_bucket_name = aws_s3_bucket.backup.bucket
-      eip_id                       = aws_eip.this.id
+      wireguard_allowed_ips           = var.allowed_ips
+      wireguard_subspace_docker_image = var.docker_image
+      wireguard_subspace_http_host    = aws_route53_record.web.fqdn
+      wireguard_endpoint_host         = aws_route53_record.endpoint.fqdn
+      wireguard_backup_bucket_name    = aws_s3_bucket.backup.bucket
+      eip_id                          = aws_eip.this.id
     }
   ))
 }

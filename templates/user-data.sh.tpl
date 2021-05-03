@@ -2,8 +2,6 @@
 exec > >(tee /var/log/user-data.log) 2>&1
 set -eu
 
-SUBSPACE_IMAGE=subspacecommunity/subspace:1.3.2
-
 # install wireguard on amazon linux 2
 echo "-- INSTALLING WIREGUARD"
 curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo
@@ -23,6 +21,11 @@ yum install -y docker
 systemctl enable docker.service
 systemctl start docker.service
 gpasswd -a ec2-user docker
+
+# install ecr helper
+echo "-- INSTALLING AWS ECR DOCKER HELPER"
+amazon-linux-extras enable docker
+yum install amazon-ecr-credential-helper
 
 # update instance ip
 echo "-- UPDATING INSTANCE IP"
@@ -115,6 +118,6 @@ docker create \
   --env SUBSPACE_IPV6_GW="fd00::10:97:1" \
   --env SUBSPACE_IPV6_NAT_ENABLED=1 \
   --env SUBSPACE_ALLOWED_IPS="${join(",", compact(distinct(wireguard_allowed_ips)))},10.99.97.0/24" \
-  $SUBSPACE_IMAGE
+  ${wireguard_subspace_docker_image}
 
 docker start subspace
