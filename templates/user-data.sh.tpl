@@ -63,7 +63,8 @@ fi
 echo "-- SETTING CRONJOB ROUTINE"
 if [[ "$EPI_ASSOCIATION_ID" != "null" ]]; then
   echo "This is the main node"
-  cat <<EOF >>/etc/cron.hourly/backup_wireguard
+  CRON_FILE=/etc/cron.hourly/backup_wireguard
+  cat <<EOF >>"$CRON_FILE"
 #!/bin/sh
 set -euo pipefail
 
@@ -74,7 +75,8 @@ rm -rf /tmp/"$BACKUP_FILE"
 EOF
 else
   echo "This is a redundant node"
-  cat <<EOF >>/etc/cron.hourly/pull_wireguard_backup
+  CRON_FILE=/etc/cron.hourly/pull_wireguard_backup
+  cat <<EOF >>"$CRON_FILE"
 #!/bin/sh
 set -euo pipefail
 
@@ -89,6 +91,7 @@ rm -rf /tmp/wireguard-data
 rm -rf /tmp/"$BACKUP_FILE"
 EOF
 fi
+chmod +x "$CRON_FILE"
 
 # Load modules.
 echo "-- LOADING KERNEL MODULES"
