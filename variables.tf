@@ -58,3 +58,11 @@ variable "is_ecr_docker_image" {
   default = false
   type    = bool
 }
+
+variable "ipv4_gateway" {
+  default = "10.99.97.1"
+}
+
+variable "ipv6_gateway" {
+  default = "fd00::10:97:1"
+}
