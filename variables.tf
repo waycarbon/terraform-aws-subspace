@@ -66,3 +66,8 @@ variable "ipv4_gateway" {
 variable "ipv6_gateway" {
   default = "fd00::10:97:1"
 }
+
+variable "disable_wireguard_dns" {
+  default = false
+  type    = bool
+}
