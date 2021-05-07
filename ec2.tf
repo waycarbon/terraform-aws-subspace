@@ -59,15 +59,16 @@ resource "aws_launch_template" "instance" {
     {
       aws_region                      = var.region
       aws_account_id                  = data.aws_caller_identity.current.account_id
+      eip_id                          = aws_eip.this.id
+      is_ecr_docker_image             = var.is_ecr_docker_image
       wireguard_allowed_ips           = var.allowed_ips
       wireguard_subspace_docker_image = var.docker_image
-      is_ecr_docker_image             = var.is_ecr_docker_image
       wireguard_ipv4_gateway          = var.ipv4_gateway
       wireguard_ipv6_gateway          = var.ipv6_gateway
+      wireguard_disable_dns           = var.disable_wireguard_dns
       wireguard_subspace_http_host    = aws_route53_record.web.fqdn
       wireguard_endpoint_host         = aws_route53_record.endpoint.fqdn
       wireguard_backup_bucket_name    = aws_s3_bucket.backup.bucket
-      eip_id                          = aws_eip.this.id
     }
   ))
 }
