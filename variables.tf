@@ -44,6 +44,11 @@ variable "web_url" {
   type = string
 }
 
+variable "internal_url" {
+  type    = string
+  default = null
+}
+
 variable "desired_instances" {
   default = 1
   type    = number
