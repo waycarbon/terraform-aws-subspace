@@ -133,4 +133,39 @@ docker create \
 
 docker start subspace
 
+cat <<EOF >>/home/ec2-user/update.sh
+#!/usr/bin/env bash
+%{ if is_ecr_docker_image ~}
+aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com
+%{ endif ~}
+docker pull ${wireguard_subspace_docker_image}
+
+docker stop subspace
+docker container rm subspace
+
+docker create \
+  --name subspace \
+  --restart always \
+  --network host \
+  --cap-add NET_ADMIN \
+  --volume /data:/data \
+  --env SUBSPACE_HTTP_HOST="${wireguard_subspace_http_host}" \
+  --env SUBSPACE_ENDPOINT_HOST="${wireguard_endpoint_host}" \
+  --env SUBSPACE_NAMESERVERS="1.1.1.1,8.8.8.8" \
+  --env SUBSPACE_LISTENPORT="51820" \
+  --env SUBSPACE_IPV4_POOL="10.99.97.0/24" \
+  --env SUBSPACE_IPV6_POOL="fd00::10:97:0/64" \
+  --env SUBSPACE_IPV4_GW="${wireguard_ipv4_gateway}" \
+  --env SUBSPACE_IPV6_GW="${wireguard_ipv6_gateway}" \
+  --env SUBSPACE_DISABLE_DNS='${wireguard_disable_dns ? "1" : ""}' \
+  --env SUBSPACE_IPV6_NAT_ENABLED=1 \
+  --env SUBSPACE_ALLOWED_IPS="${join(",", compact(distinct(wireguard_allowed_ips)))},10.99.97.0/24" \
+  ${wireguard_subspace_docker_image}
+
+docker start subspace
+EOF
+
+chmod +x /home/ec2-user/update.sh
+chown ec2-user: /home/ec2-user/update.sh
+
 log "ENDING USER-DATA"
