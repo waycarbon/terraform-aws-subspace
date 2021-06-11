@@ -69,3 +69,8 @@ resource "aws_iam_role_policy_attachment" "this" {
   role       = aws_iam_role.this.name
 }
 
+resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
+  count      = (var.enable_cloudwatch_metrics ? 1 : 0)
+  policy_arn = data.aws_iam_policy.aws_cloudwatch_agent_server_policy.arn
+  role       = aws_iam_role.this.name
+}

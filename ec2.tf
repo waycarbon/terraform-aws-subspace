@@ -69,6 +69,7 @@ resource "aws_launch_template" "instance" {
       wireguard_subspace_http_host    = aws_route53_record.web.fqdn
       wireguard_endpoint_host         = aws_route53_record.endpoint.fqdn
       wireguard_backup_bucket_name    = aws_s3_bucket.backup.bucket
+      enable-cloudwatch-metrics       = var.enable_cloudwatch_metrics
     }
   ))
 }

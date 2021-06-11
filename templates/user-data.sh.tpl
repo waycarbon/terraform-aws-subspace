@@ -2,6 +2,50 @@
 exec > >(tee /var/log/user-data.log) 2>&1
 set -eu
 
+%{ if enable-cloudwatch-metrics ~}
+# install and configure cloudwatch agent
+sudo yum install --assumeyes amazon-cloudwatch-agent
+cat <<-EOF > /opt/aws/amazon-cloudwatch-agent/bin/config.json
+{
+  "metrics": {
+    "append_dimensions": {
+      "AutoScalingGroupName": "\$${aws:AutoScalingGroupName}",
+      "InstanceId": "\$${aws:InstanceId}"
+    },
+    "metrics_collected": {
+      "mem": {
+        "measurement": [
+          "mem_used_percent"
+        ],
+        "metrics_collection_interval": 30
+      },
+      "swap": {
+        "measurement": [
+          "swap_used_percent",
+          "swap_free"
+        ],
+        "metrics_collection_interval": 30
+      },
+      "disk": {
+        "measurement": [
+          "disk_used_percent"
+        ],
+        "metrics_collection_interval": 30,
+        "resources": [
+          "/"
+        ]
+      }
+    }
+  }
+}
+EOF
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config \
+  -m ec2 \
+  -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json \
+  -s
+
+%{ endif ~}
 function log {
   echo "--[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
