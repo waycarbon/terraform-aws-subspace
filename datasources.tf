@@ -13,3 +13,7 @@ data "aws_route53_zone" "target" {
 }
 
 data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy" "aws_cloudwatch_agent_server_policy" {
+  arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}

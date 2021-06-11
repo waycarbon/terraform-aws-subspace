@@ -76,3 +76,9 @@ variable "disable_wireguard_dns" {
   default = false
   type    = bool
 }
+
+variable "enable_cloudwatch_metrics" {
+  default = false
+  type    = bool
+  description = "Optional: enable swap, memory and disk metrics with cloudwatch agent"
+}
