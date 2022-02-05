@@ -10,8 +10,8 @@ module "validate_email" {
 
   count = (
     var.admin_user_email != null
-    ? 0
-    : 1
+    ? 1
+    : 0
   )
   assert        = length(regexall("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)", var.admin_user_email)) > 0
   error_message = "The email provider for the admin account is invalid: ${var.admin_user_email} "
@@ -20,8 +20,8 @@ module "validate_email" {
 resource "random_password" "this" {
   count = (
     var.admin_user_email != null
-    ? 0
-    : 1
+    ? 1
+    : 0
   )
   length      = 20
   special     = true
@@ -32,5 +32,9 @@ resource "random_password" "this" {
 }
 
 locals {
-  hashed_password_base64 = base64encode(bcrypt(random_password.this.result, 10))
+  hashed_password_base64 = (
+    var.admin_user_email != null
+    ? base64encode(bcrypt(random_password.this.result, 10))
+    : null
+  )
 }
