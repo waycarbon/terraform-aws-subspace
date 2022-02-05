@@ -70,6 +70,7 @@ module "vpn" {
   subnet_ids       = [data.aws_subnet.this.id]
   ssh_key_bucket   = aws_s3_bucket.ssh.bucket
   vpn_endpoint_url = "endpoint.vpn.${data.aws_route53_zone.this.name}"
+  internal_url     = "intenal.vpn.${data.aws_route53_zone.this.name}"
   web_url          = "vpn.${data.aws_route53_zone.this.name}"
 }
 
