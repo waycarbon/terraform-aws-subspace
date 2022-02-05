@@ -170,8 +170,9 @@ docker create \
   --env SUBSPACE_IPV6_POOL="fd00::10:97:0/64" \
   --env SUBSPACE_IPV4_GW="${wireguard_ipv4_gateway}" \
   --env SUBSPACE_IPV6_GW="${wireguard_ipv6_gateway}" \
-  --env SUBSPACE_DISABLE_DNS='${wireguard_disable_dns ? "1" : ""}' \
-  --env SUBSPACE_IPV6_NAT_ENABLED=1 \
+  --env SUBSPACE_DISABLE_DNS='${wireguard_disable_dns ? "1" : "0"}' \
+  --env SUBSPACE_IPV4_NAT_ENABLED='${subspace_ipv4_nat_enabled ? "1" : "0"}' \
+  --env SUBSPACE_IPV6_NAT_ENABLED='${subspace_ipv6_nat_enabled ? "1" : "0"}' \
   --env SUBSPACE_ALLOWED_IPS="${join(",", compact(distinct(wireguard_allowed_ips)))},10.99.97.0/24" \
   ${wireguard_subspace_docker_image}
 
