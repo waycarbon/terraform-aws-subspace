@@ -28,7 +28,7 @@ resource "random_password" "this" {
 locals {
   hashed_password_base64 = (
     var.admin_user_email != null
-    ? base64encode(bcrypt(random_password.this.result, 10))
+    ? base64encode(bcrypt(random_password.this[0].result, 10))
     : null
   )
 }
