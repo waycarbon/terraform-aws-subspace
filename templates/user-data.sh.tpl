@@ -176,6 +176,19 @@ docker create \
   --env SUBSPACE_ALLOWED_IPS="${join(",", compact(distinct(wireguard_allowed_ips)))},10.99.97.0/24" \
   ${wireguard_subspace_docker_image}
 
+%{ if admin_config != null ~}
+if ! [ -f /data/config.json ]; then
+  cat <<EOF >>/data/config.json
+{
+    "info": {
+        "email": "${admin_config.email}",
+        "password": "${admin_config.password}"
+    }
+}
+EOF
+fi
+%{ endif ~}
+
 docker start subspace
 
 cat <<EOF >>/home/ec2-user/update.sh
