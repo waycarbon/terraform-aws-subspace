@@ -55,3 +55,15 @@ periodically and restart the VPN in case they detect changes.
 
 The plan is to add a network load balancer in front of the EC2 instances launched by the autoscaling group.
 In theory everything is set up, but it still needs to be tested whether the HA behaviour described holds up.
+
+## Examples
+
+Examples can be found in the `examples/` folder.
+
+### Pre-requisites
+
+- An AWS Account
+- Tag the default VPC and default subnet with `Name = default`
+- A correctly configured route53 zone
+  - in case you own a domain managed by route53 registrar, just use the same zone
+  - in case you own a domain managed by a different registrar (i.e. Cloudflare), you must delegate the zone using delegation sets or zone name servers
