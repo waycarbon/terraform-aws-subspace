@@ -1,9 +1,3 @@
-variable "admin_user_email" {
-  type        = string
-  default     = null
-  description = "Creates pre-configured admin user with the provider email and a random password"
-}
-
 module "validate_email" {
   source  = "rhythmictech/errorcheck/terraform"
   version = "1.0.0"

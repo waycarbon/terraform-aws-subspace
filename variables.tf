@@ -114,3 +114,9 @@ variable "enable_cloudwatch_metrics" {
   type        = bool
   description = "Optional: enable swap, memory and disk metrics with cloudwatch agent"
 }
+
+variable "admin_user_email" {
+  type        = string
+  default     = null
+  description = "Creates pre-configured admin user with the provider email and a random password"
+}
