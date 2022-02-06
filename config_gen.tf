@@ -31,7 +31,8 @@ resource "tls_private_key" "saml_cert" {
     ? 1
     : 0
   )
-  algorithm = "ECDSA"
+  algorithm = "RSA"
+  rsa_bits  = 2048
 }
 
 resource "tls_self_signed_cert" "saml_cert" {
@@ -40,7 +41,7 @@ resource "tls_self_signed_cert" "saml_cert" {
     ? 1
     : 0
   )
-  key_algorithm   = "ECDSA"
+  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.saml_cert[0].private_key_pem
 
   subject {
@@ -60,9 +61,9 @@ resource "tls_self_signed_cert" "saml_cert" {
 
 resource "random_password" "hash_key" {
   count = (
-  var.generate_subspace_config
-  ? 1
-  : 0
+    var.generate_subspace_config
+    ? 1
+    : 0
   )
   length  = 32
   special = false
@@ -73,9 +74,9 @@ resource "random_password" "hash_key" {
 
 resource "random_password" "block_key" {
   count = (
-  var.generate_subspace_config
-  ? 1
-  : 0
+    var.generate_subspace_config
+    ? 1
+    : 0
   )
   length  = 32
   special = false
@@ -99,19 +100,19 @@ locals {
         block_key = random_password.block_key[0].result
         saml = {
           idp_metadata = ""
-          private_key = base64encode(tls_private_key.saml_cert[0].private_key_pem)
-          certificate = base64encode(tls_self_signed_cert.saml_cert[0].cert_pem)
+          private_key  = base64encode(tls_private_key.saml_cert[0].private_key_pem)
+          certificate  = base64encode(tls_self_signed_cert.saml_cert[0].cert_pem)
         }
         mail = {
-          from = ""
-          server = ""
-          port = 0
+          from     = ""
+          server   = ""
+          port     = 0
           username = ""
           password = ""
         }
       }
       profiles = null
-      users = null
+      users    = null
       modified = "0001-01-01T00:00:00Z"
     }
     : null

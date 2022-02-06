@@ -159,7 +159,7 @@ mkdir --parents /data
 %{ if subspace_config != null ~}
 # add generated Subspace config if /data/config.json not present
 if ! [ -f /data/config.json ]; then
-  cat <<EOF >>/data/config.json
+  cat <<EOF >/data/config.json
 ${ jsonencode(subspace_config) }
 EOF
 chown root:root /data/config.json
