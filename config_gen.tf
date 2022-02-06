@@ -99,8 +99,8 @@ locals {
         block_key = random_password.block_key[0].result
         saml = {
           idp_metadata = ""
-          private_key = tls_private_key.saml_cert[0].private_key_pem
-          certificate = tls_self_signed_cert.saml_cert[0].cert_pem
+          private_key = base64encode(tls_private_key.saml_cert[0].private_key_pem)
+          certificate = base64encode(tls_self_signed_cert.saml_cert[0].cert_pem)
         }
         mail = {
           from = ""
