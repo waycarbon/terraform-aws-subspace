@@ -11,6 +11,7 @@ This project is intended to be a thin layer over the subspace project. The added
 - periodic backup to an S3 bucket
 - ssh key written to a bucket of choice, so you can later access the EC2 instance via SSH
 - Web App, Wireguard endpoint and Internal Alias Route53 Records
+- Initial server configuration generated in terraform, which prevents a fresh deployment to be exposed to the web
 
 ### Arguments
 
