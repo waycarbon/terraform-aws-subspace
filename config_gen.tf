@@ -95,8 +95,8 @@ locals {
         totp_key  = ""
         configure = true
         domain    = ""
-        hash_key  = random_password.hash_key.result
-        block_key = random_password.block_key.result
+        hash_key  = random_password.hash_key[0].result
+        block_key = random_password.block_key[0].result
         saml = {
           idp_metadata = ""
           private_key = tls_private_key.saml_cert[0].private_key_pem
