@@ -167,7 +167,7 @@ if ! [ -f /data/config.json ]; then
     }
 }
 EOF
-chmod root:root /data/config.json
+chown root:root /data/config.json
 chmod 644 /data/config.json
 fi
 %{ endif ~}
