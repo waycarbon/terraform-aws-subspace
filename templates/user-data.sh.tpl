@@ -154,6 +154,19 @@ EOF
 
 sysctl -p
 
+mkdir --parents /data
+
+%{ if subspace_config != null ~}
+# add generated Subspace config if /data/config.json not present
+if ! [ -f /data/config.json ]; then
+  cat <<EOF >/data/config.json
+${ jsonencode(subspace_config) }
+EOF
+chown root:root /data/config.json
+chmod 644 /data/config.json
+fi
+%{ endif ~}
+
 # create and start subspace docker
 log "CREATING AND STARTING VPN DOCKER CONTAINER"
 docker create \
