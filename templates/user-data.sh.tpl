@@ -154,6 +154,24 @@ EOF
 
 sysctl -p
 
+mkdir --parents /data
+
+%{ if admin_config != null ~}
+# add admin config if /data/config.json not present
+if ! [ -f /data/config.json ]; then
+  cat <<EOF >>/data/config.json
+{
+    "info": {
+        "email": "${admin_config.email}",
+        "password": "${admin_config.password}"
+    }
+}
+EOF
+chmod root:root /data/config.json
+chmod 644 /data/config.json
+fi
+%{ endif ~}
+
 # create and start subspace docker
 log "CREATING AND STARTING VPN DOCKER CONTAINER"
 docker create \
@@ -175,19 +193,6 @@ docker create \
   --env SUBSPACE_IPV6_NAT_ENABLED='${subspace_ipv6_nat_enabled ? "1" : "0"}' \
   --env SUBSPACE_ALLOWED_IPS="${join(",", compact(distinct(wireguard_allowed_ips)))},10.99.97.0/24" \
   ${wireguard_subspace_docker_image}
-
-%{ if admin_config != null ~}
-if ! [ -f /data/config.json ]; then
-  cat <<EOF >>/data/config.json
-{
-    "info": {
-        "email": "${admin_config.email}",
-        "password": "${admin_config.password}"
-    }
-}
-EOF
-fi
-%{ endif ~}
 
 docker start subspace
 
