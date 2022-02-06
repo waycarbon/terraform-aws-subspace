@@ -120,3 +120,9 @@ variable "admin_user_email" {
   default     = null
   description = "Creates pre-configured admin user with the provider email and a random password"
 }
+
+variable "generate_subspace_config" {
+  default = true
+  type = bool
+  description = "Generate initial Subspace config to avoid exposing an unprotected installation on first deployment"
+}

@@ -156,16 +156,11 @@ sysctl -p
 
 mkdir --parents /data
 
-%{ if admin_config != null ~}
-# add admin config if /data/config.json not present
+%{ if subspace_config != null ~}
+# add generated Subspace config if /data/config.json not present
 if ! [ -f /data/config.json ]; then
   cat <<EOF >>/data/config.json
-{
-    "info": {
-        "email": "${admin_config.email}",
-        "password": "${admin_config.password}"
-    }
-}
+${ jsonencode(subspace_config) }
 EOF
 chown root:root /data/config.json
 chmod 644 /data/config.json
