@@ -1,3 +1,12 @@
+locals {
+  email_to_validate = (
+    var.generate_subspace_config == true
+    ? var.admin_user_email
+    : ""
+  )
+
+}
+
 module "validate_email" {
   source  = "rhythmictech/errorcheck/terraform"
   version = "1.0.0"
@@ -7,8 +16,11 @@ module "validate_email" {
     ? 1
     : 0
   )
-  assert        = length(regexall("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)", var.admin_user_email)) > 0
-  error_message = "The email provider for the admin account is invalid: ${var.admin_user_email} "
+  assert = (
+    var.generate_subspace_config == false ||
+    length(regexall("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)", local.email_to_validate)) > 0
+  )
+  error_message = "The email provider for the admin account is invalid: ${local.email_to_validate}"
 }
 
 resource "random_password" "this" {
