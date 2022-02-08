@@ -7,7 +7,10 @@ module "validate_email" {
     ? 1
     : 0
   )
-  assert        = length(regexall("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)", var.admin_user_email)) > 0
+  assert = (
+    var.generate_subspace_config == true &&
+    length(regexall("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)", var.admin_user_email)) > 0
+  )
   error_message = "The email provider for the admin account is invalid: ${var.admin_user_email} "
 }
 
