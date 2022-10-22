@@ -9,7 +9,7 @@ locals {
 
 module "validate_email" {
   source  = "rhythmictech/errorcheck/terraform"
-  version = "1.0.0"
+  version = "1.3.0"
 
   count = (
     var.generate_subspace_config
@@ -21,6 +21,8 @@ module "validate_email" {
     length(regexall("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)", local.email_to_validate)) > 0
   )
   error_message = "The email provider for the admin account is invalid: ${local.email_to_validate}"
+  
+  use_jq = true
 }
 
 resource "random_password" "this" {
