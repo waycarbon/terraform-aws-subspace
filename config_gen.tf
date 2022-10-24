@@ -20,6 +20,7 @@ module "validate_email" {
     var.generate_subspace_config == false ||
     length(regexall("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)", local.email_to_validate)) > 0
   )
+
   error_message = "The email provider for the admin account is invalid: ${local.email_to_validate}"
 }
 
@@ -53,7 +54,7 @@ resource "tls_self_signed_cert" "saml_cert" {
     ? 1
     : 0
   )
-  key_algorithm   = "RSA"
+#  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.saml_cert[0].private_key_pem
 
   subject {
@@ -81,7 +82,7 @@ resource "random_password" "hash_key" {
   special = false
   upper   = true
   lower   = true
-  number  = true
+  numeric = true
 }
 
 resource "random_password" "block_key" {
@@ -94,7 +95,7 @@ resource "random_password" "block_key" {
   special = false
   upper   = true
   lower   = true
-  number  = true
+  numeric = true
 }
 
 locals {
